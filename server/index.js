@@ -64,7 +64,7 @@ router.get('/api/user/findone', (req, res) => {
 })
 // user/add
 router.post('/api/user/add', (req, res) => {
-	var sql = `insert into user values (null, ?, ?, ?, ?, ?, ?, ?)`
+	var sql = `insert into user (id, name, fullName, password, role_id, company_id, phone, mail) values (null, ?, ?, ?, ?, ?, ?, ?)`
 	pool.getConnection(function(err, connection) {
 		connection.query(sql, [req.body.name, req.body.fullName, req.body.password, req.body.role.id, req.body.company.id, req.body.phone, req.body.mail], (err, data) => {
 			if (err) {
@@ -141,9 +141,9 @@ router.post('/api/company/add', (req, res) => {
 	if (!req.body.name) {
 		res.status(500).send({message: '公司名不能为空'})
 	} else {
-		var sql = 'insert into company values (null,?,now())'
+		var sql = 'insert into company (id, name, create_time ) values (null,?,now())'
 		pool.getConnection(function(err, connection) {
-			connection.query(sql, [req.body.name], (err, data) => {
+			connection.query(sql, [req.body.name, now()], (err, data) => {
 				if (err) {
 					res.send(err)
 				} else {
@@ -228,9 +228,12 @@ router.post('/api/role/add', (req, res) => {
 	} else if (!req.body.fullName) {
 		res.status(500).send({'message':'角色名不能为空'})
 	} else {
-		var sql = 'insert into role values(null,?,?)'
+		var sql = 'insert into role (id, name, fullName) values(null,?,?)'
+
 		pool.getConnection(function(err, connection) {
+
 			connection.query(sql, [req.body.name, req.body.fullName], (err, data, fields) => {
+
 				if (err) {
 					res.status(500).send(err)
 				} else {
